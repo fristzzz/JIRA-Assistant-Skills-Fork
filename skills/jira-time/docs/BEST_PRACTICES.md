@@ -9,10 +9,10 @@ Navigation hub for comprehensive time tracking guidance. Choose your role and us
 New to time tracking? Start here:
 
 1. **Set up credentials**: Configure `JIRA_API_TOKEN`, `JIRA_EMAIL`, `JIRA_SITE_URL`
-2. **Log your first worklog**: `python add_worklog.py PROJ-123 --time 2h --comment "Description"`
-3. **Check your time**: `python time_report.py --user currentUser() --period this-week`
+2. **Log your first worklog**: `jira-as time log PROJ-123 -t 2h -c "Description"`
+3. **Check your time**: `jira-as time report -u currentUser() --period this-week`
 
-For script documentation and examples, see [SKILL.md](../SKILL.md).
+For command documentation and examples, see [SKILL.md](../SKILL.md).
 
 ---
 
@@ -40,7 +40,7 @@ For script documentation and examples, see [SKILL.md](../SKILL.md).
 | Export for invoicing | [Billing Integration](billing-integration.md) | Invoice Preparation Workflow |
 | Configure team policies | [Team Policies](team-policies.md) | Establishing Team Policies |
 | Find time format syntax | [Time Format Quick Ref](reference/time-format-quick-ref.md) | - |
-| Debug script errors | [Error Codes](reference/error-codes.md) | - |
+| Debug command errors | [Error Codes](reference/error-codes.md) | - |
 
 ---
 
@@ -120,28 +120,28 @@ Lookup tables for common queries:
 
 ```bash
 # Log time to issue
-python add_worklog.py PROJ-123 --time 2h --comment "Description"
+jira-as time log PROJ-123 -t 2h -c "Description"
 
 # Log yesterday's work
-python add_worklog.py PROJ-123 --time 3h --started yesterday
+jira-as time log PROJ-123 -t 3h -s yesterday
 
 # Set estimate
-python set_estimate.py PROJ-123 --original "1d" --remaining "4h"
+jira-as time estimate PROJ-123 --original "1d" --remaining "4h"
 
 # View worklogs
-python get_worklogs.py PROJ-123
+jira-as time worklogs PROJ-123
 
 # Delete worklog (dry-run first!)
-python delete_worklog.py PROJ-123 --worklog-id 12345 --dry-run
+jira-as time delete-worklog PROJ-123 -w 12345 --dry-run
 
 # My time this week
-python time_report.py --user currentUser() --period this-week
+jira-as time report -u currentUser() --period this-week
 
 # Project report to CSV
-python time_report.py --project ACME --period this-month --output csv
+jira-as time report -p ACME --period this-month -f csv
 
 # Bulk log time (dry-run first!)
-python bulk_log_time.py --jql "sprint = 123" --time 15m --comment "Planning" --dry-run
+jira-as time bulk-log -j "sprint = 123" -t 15m -c "Planning" -n
 ```
 
 ---
@@ -172,7 +172,7 @@ Variance = (Time Spent + Remaining) - Original Estimate
 
 Estimates may not update correctly in JIRA Cloud. Workaround:
 ```bash
-python set_estimate.py PROJ-123 --original "2d" --remaining "1d 4h"
+jira-as time estimate PROJ-123 --original "2d" --remaining "1d 4h"
 ```
 
 ---

@@ -57,8 +57,8 @@ For operations affecting >200 issues or high-impact changes:
 ### Execution Phase
 
 ```markdown
-- [ ] Current state exported for rollback: `jql_search.py ... --format csv > before.csv`
-- [ ] Checkpointing enabled (if >500 issues): `--enable-checkpoint`
+- [ ] Current state exported for rollback: `jira-as search export "JQL" -o before.csv --fields key,status,assignee`
+- [ ] Batching strategy defined (if >500 issues): split by JQL range or use `--max-issues`
 - [ ] Test batch successful: `--max-issues 10`
 - [ ] Test batch results verified in JIRA
 - [ ] Full operation executed
@@ -102,13 +102,13 @@ For operations affecting >200 issues or high-impact changes:
 # https://your-company.atlassian.net/issues/?jql=YOUR_QUERY
 
 # 2. Run dry-run
-python bulk_transition.py --jql "YOUR_JQL" --to "STATUS" --dry-run
+jira-as bulk transition --jql "YOUR_JQL" --to "STATUS" --dry-run
 
 # 3. Export current state
-python jql_search.py "YOUR_JQL" --fields key,status,assignee --format csv > before.csv
+jira-as search export "YOUR_JQL" --fields key,status,assignee -o before.csv
 
 # 4. Test small batch
-python bulk_transition.py --jql "YOUR_JQL ORDER BY created ASC" --to "STATUS" --max-issues 5
+jira-as bulk transition --jql "YOUR_JQL ORDER BY created ASC" --to "STATUS" --max-issues 5 --dry-run
 ```
 
 ---
@@ -127,9 +127,10 @@ python bulk_transition.py --jql "YOUR_JQL ORDER BY created ASC" --to "STATUS" --
 - [ ] Saved JQL: [query]
 
 ### Rollback Procedure (if needed within 24h)
-1. Run: `python bulk_transition.py --jql "project=PROJ AND status='Done' AND updated >= -1h" --to "In Progress"`
-2. Verify count matches original
-3. Spot-check 10 issues
+1. Run: `jira-as bulk transition --jql "project=PROJ AND status='Done' AND updated >= -1h" --to "In Progress" --dry-run`
+2. Execute the same command without `--dry-run` after verification
+3. Verify count matches original
+4. Spot-check 10 issues
 
 ### Rollback Procedure (if needed after 24h)
 1. Use CSV import to restore

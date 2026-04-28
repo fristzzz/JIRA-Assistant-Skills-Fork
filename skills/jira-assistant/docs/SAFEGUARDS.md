@@ -9,7 +9,7 @@ Guidelines for destructive operations, error recovery, and safe practices.
 | Operation | Skill | Risk Level | Safeguard |
 |-----------|-------|:----------:|-----------|
 | Delete issue | `jira-issue` | HIGH | Confirm key, warn if has subtasks/links |
-| Bulk transition | `jira-bulk` | HIGH | Show count, require `--confirm` or dry-run first |
+| Bulk transition | `jira-bulk` | HIGH | Show count, require dry-run first |
 | Bulk delete | `jira-bulk` | CRITICAL | Require issue keys explicitly, no wildcards |
 | Delete project | `jira-admin` | CRITICAL | Double confirmation, show issue count |
 | Remove permissions | `jira-admin` | HIGH | Show affected users |
@@ -29,8 +29,8 @@ Assistant: "This will close 47 bugs. Run with --dry-run first?
 
             jira-as bulk transition "project=TES AND type=Bug" --to Done --dry-run
 
-            Then confirm with:
-            jira-as bulk transition "project=TES AND type=Bug" --to Done --confirm"
+            Then execute:
+            jira-as bulk transition "project=TES AND type=Bug" --to Done"
 ```
 
 ### Undo Guidance
@@ -63,9 +63,10 @@ Assistant: "This will close 47 bugs. Run with --dry-run first?
 Error: "You don't have permission to edit issues"
 
 Recovery:
-1. Check current permissions: jira-as admin list-permissions --project TES
-2. If admin: jira-as admin add-permission --scheme ... --permission EDIT_ISSUES
-3. If not admin: Contact project administrator
+1. Check current permissions: jira-as admin permission check --project TES
+2. If admin, review available schemes: jira-as admin permission-scheme list
+3. If admin, assign the correct scheme: jira-as admin permission-scheme assign --project TES --scheme 10050 --dry-run
+4. If not admin: Contact project administrator
 ```
 
 ### Common Error Patterns
@@ -178,10 +179,10 @@ For high-risk operations, require explicit confirmation:
 
 ```bash
 # Dry run first
-jira-as bulk assign "project=TES" --to @alice --dry-run
+jira-as bulk assign --jql "project=TES" --assignee alice --dry-run
 
-# Review output, then confirm
-jira-as bulk assign "project=TES" --to @alice --confirm
+# Review output, then execute
+jira-as bulk assign --jql "project=TES" --assignee alice
 ```
 
 ### Rollback Strategy
